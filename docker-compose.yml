@@ -1,0 +1,24 @@
+service:
+  postgres:
+    image: postgres:17
+    container_name: logistream-postgres
+    restart: unless-stopped
+  
+  enviroment:
+      POSTGRES_USER: logistream
+      POSTGRES_PASSWORD: logistream
+      POSTGRES_DB: logistream
+
+  ports:
+      - "5432:5432"
+  volumes:
+  postgres_data: /var/lib/postgresql/data
+
+  networks:
+    - logistream-network
+
+volumes:
+  postgres_data:
+
+networks:
+logistream_network:
