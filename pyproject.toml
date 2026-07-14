@@ -4,4 +4,12 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "alembic>=1.18.5",
+    "confluent-kafka>=2.15.0",
+    "fastapi>=0.139.0",
+    "psycopg2-binary>=2.9.12",
+    "pydantic-settings>=2.14.2",
+    "sqlalchemy>=2.0.51",
+    "uvicorn>=0.50.2",
+]
