@@ -36,3 +36,8 @@ class AnalyticsService:
                     db=db,
                     metric="in_transit_shipments",
                 )
+    def get_metrics(
+            self,
+            db: Session,
+    ):
+        return self.repository.get_all_metrics(db)

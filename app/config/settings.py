@@ -9,9 +9,7 @@ class Settings(BaseSettings):
 
     kafka_bootstrap_servers: str
 
-    redis_host: str
-    redis_port: int
-
+    redis_url: str
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=False,

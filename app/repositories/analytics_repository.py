@@ -39,3 +39,9 @@ class AnalyticsRepository:
         db.refresh(analytics)
 
         return analytics
+    
+    def get_all_metrics(
+        self,
+        db: Session,
+    ):
+        return db.query(Analytics).all()

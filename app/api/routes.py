@@ -4,10 +4,12 @@ from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.api.schemas import ShipmentCreate, ShipmentStatusUpdate
 from app.services.shipment_service import ShipmentService
+from app.services.analytics_service import AnalyticsService
 
 router = APIRouter()
 
 service = ShipmentService()
+analytics_service = AnalyticsService()
 
 @router.post("/shipments")
 def create_shipment(shipment: ShipmentCreate):
@@ -48,3 +50,9 @@ def update_status(
     return {
         "message": "shipment status update event published."  
     }
+
+@router.get("/analytics")
+def get_analytics(
+    db: Session = Depends(get_db),
+):
+    return analytics_service.get_metrics(db)
