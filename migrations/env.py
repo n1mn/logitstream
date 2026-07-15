@@ -6,7 +6,8 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.database.base import Base
-from app.models import *
+from app.models.shipment import Shipment
+from app.models.shipment_event import ShipmentEvent
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -3,10 +3,13 @@ from sqlalchemy.orm import Session
 from app.models.shipment import Shipment
 from app.repositories.shipment_repository import ShipmentRepository
 from app.producers.kafka_producer import KafkaProducer
+from app.repositories.shipment_event_repository import ShipmentEventRepository
+
 
 class ShipmentService:
     def __init__(self):
         self.repository = ShipmentRepository()
+        self.event_repository = ShipmentEventRepository()
         self.producer = KafkaProducer()
     
     def publish_shipment(self, shipment: dict):
@@ -30,7 +33,16 @@ class ShipmentService:
             origin=event["origin"],
             destination=event["destination"],
         )
-        return self.repository.create(db, shipment)
+
+        shipment =self.repository.create(
+            db=db,
+            shipment=shipment,
+        )
+        self.event_repository.create(
+            db=db,
+            event=event,
+        )
+        return shipment
     
     def get_shipment(
             self,
@@ -53,11 +65,17 @@ class ShipmentService:
         if shipment is None:
            raise ValueError("Shipment not found")
         
-        return self.repository.update_status(
+        updated_shipment = self.repository.update_status(
             db=db, 
             shipment=shipment, 
             status=event["status"],
         )
+        self.event_repository.create(
+            db=db, 
+            event=event,
+        )
+        return updated_shipment
+    
     def publish_status_update(
             self,
             shipment_id: str,
