@@ -9,6 +9,8 @@ from app.repositories.shipment_event_repository import ShipmentEventRepository
 
 from app.cache.redis_client import redis_client
 
+from app.metrics import cache_hits_total, cache_misses_total
+
 class ShipmentService:
     def __init__(self):
         self.repository = ShipmentRepository()
@@ -57,9 +59,11 @@ class ShipmentService:
         cached = redis_client.get(cache_key)
 
         if cached:
+            cache_hits_total.inc()
             print("🔥 Cache HIT")
             return json.loads(cached)
 
+        cache_misses_total.inc()
         print("💾 Cache MISS")
 
         shipment = self.repository.get_by_shipment_id(

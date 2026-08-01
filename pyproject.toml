@@ -8,6 +8,7 @@ dependencies = [
     "alembic>=1.18.5",
     "confluent-kafka>=2.15.0",
     "fastapi>=0.139.0",
+    "prometheus-client>=0.25.0",
     "psycopg2-binary>=2.9.12",
     "pydantic-settings>=2.14.2",
     "redis>=8.0.1",

@@ -6,6 +6,8 @@ from app.config.settings import settings
 from app.database.session import SessionLocal
 from app.services.shipment_service import ShipmentService
 
+from app.metrics import kafka_messages_processed
+
 service = ShipmentService()
 consumer = Consumer(
     {
@@ -33,6 +35,8 @@ while True:
         db = SessionLocal()
         event = json.loads(msg.value().decode("utf-8"))
 
+        kafka_messages_processed.inc()
+        
         if event["event_type"] == "SHIPMENT_CREATED":
             service.create_shipment(
                 db=db,

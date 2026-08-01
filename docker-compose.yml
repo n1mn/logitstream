@@ -64,6 +64,43 @@ services:
     networks:
       - logistream_network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: logistream-prometheus
+
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+    ports:
+      - "9090:9090"
+
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+    depends_on:
+      - kafka
+
+    networks:
+      - logistream_network
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: logistream-grafana
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+
+    depends_on:
+      - prometheus
+
+    networks:
+      - logistream_network
+
 volumes:
   postgres_data:
 

@@ -1,14 +1,22 @@
 from fastapi import FastAPI
 
 from app.config.settings import settings
-from app.api.routes import router as shipment_router 
+from app.api.routes import router 
 
+from prometheus_client import make_asgi_app
 
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version
+
+    
 )
-app.include_router(shipment_router)
+
+metrics_app = make_asgi_app()
+
+app.mount("/metrics", metrics_app)
+
+app.include_router(router)
 
 @app.get("/")
 async def root():

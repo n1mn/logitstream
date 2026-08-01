@@ -6,6 +6,7 @@ from app.api.schemas import ShipmentCreate, ShipmentStatusUpdate
 from app.services.shipment_service import ShipmentService
 from app.services.analytics_service import AnalyticsService
 
+from app.metrics import api_requests_total
 router = APIRouter()
 
 service = ShipmentService()
@@ -14,6 +15,7 @@ analytics_service = AnalyticsService()
 @router.post("/shipments")
 def create_shipment(shipment: ShipmentCreate):
 
+    api_requests_total.inc()
     service.publish_shipment(
         shipment.model_dump()
     )
@@ -25,7 +27,8 @@ def create_shipment(shipment: ShipmentCreate):
 def get_shipment(
     shipment_id: str,
     db: Session = Depends(get_db),
-):
+):  
+    api_requests_total.inc()
     shipment = service.get_shipment(
         db = db,
         shipment_id = shipment_id,
@@ -41,7 +44,8 @@ def get_shipment(
 def update_status(
     shipment_id: str,
     shipment: ShipmentStatusUpdate,
-):
+):  
+    api_requests_total.inc()
     service.publish_status_update(
         shipment_id=shipment_id,
         status=shipment.status,
@@ -55,4 +59,5 @@ def update_status(
 def get_analytics(
     db: Session = Depends(get_db),
 ):
+    api_requests_total.inc()
     return analytics_service.get_metrics(db)

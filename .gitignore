@@ -1,1 +1,59 @@
-#Add files to be ignored here
+# ============================================
+# Python
+# ============================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution
+build/
+dist/
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+__MACOSX/
+
+# Logs
+*.log
+
+# Environment Variables
+.env
+.env.*
+
+# Database
+*.db
+*.sqlite3
+
+# Alembic
+alembic.ini.bak
+
+# Docker
+docker-data/
+
+# Grafana
+grafana/data/
+
+# Prometheus
+prometheus/data/
+
+# Misc
+.cache/
