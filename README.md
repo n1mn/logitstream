@@ -8,6 +8,33 @@ A production-inspired backend project for asynchronous shipment processing using
 
 *Event-Driven Architecture · Kafka Consumers · Cache-Aside · Analytics · Observability*
 
+<br/>
+
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-8-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=python&logoColor=white)
+![Alembic](https://img.shields.io/badge/Alembic-Migrations-6BA539?style=for-the-badge)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker%20Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![uv](https://img.shields.io/badge/uv-Package%20Manager-DE5FE9?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-231F20?style=for-the-badge&logo=apachekafka&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-8-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![uv](https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logo=uv&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+
 </div>
 
 ---
@@ -47,90 +74,88 @@ PostgreSQL provides durable persistence, Redis implements a cache-aside read pat
 
 ## Architecture
 
-```
-                         ┌───────────────────┐
-                         │      Client       │
-                         └─────────┬─────────┘
-                                   │ HTTP
-                                   ▼
-                         ┌───────────────────┐
-                         │      FastAPI      │
-                         │     REST API      │
-                         └─────────┬─────────┘
-                                   │
-                              publish event
-                                   │
-                                   ▼
-                         ┌───────────────────┐
-                         │   Apache Kafka    │
-                         │  shipment-events  │
-                         └─────────┬─────────┘
-                                   │
-                    ┌──────────────┴──────────────┐
-                    │                             │
-                    ▼                             ▼
-          ┌──────────────────┐          ┌──────────────────┐
-          │ Shipment Consumer│          │Analytics Consumer│
-          └────────┬─────────┘          └────────┬─────────┘
-                    │                             │
-                    ▼                             ▼
-          ┌──────────────────┐          ┌──────────────────┐
-          │    PostgreSQL    │          │ Analytics Table  │
-          │ Shipments/Events │          │   PostgreSQL     │
-          └────────┬─────────┘          └──────────────────┘
-                    │
-                    │ cache-aside reads
-                    ▼
-          ┌──────────────────┐
-          │      Redis       │
-          └──────────────────┘
+```mermaid
+flowchart TB
+    Client(["🧑‍💻 Client"])
+    API["⚡ FastAPI REST API"]
+    Kafka[["📨 Apache Kafka<br/><b>shipment-events</b>"]]
+    SC["📦 Shipment Consumer"]
+    AC["📊 Analytics Consumer"]
+    PG[("🐘 PostgreSQL<br/>Shipments / Events")]
+    AT[("🐘 Analytics Table<br/>PostgreSQL")]
+    Redis[("🟥 Redis<br/>Cache-Aside")]
+    Prom["🔥 Prometheus"]
+    Graf["📈 Grafana"]
 
-          FastAPI /metrics
-                    │
-                    ▼
-          ┌──────────────────┐
-          │    Prometheus    │
-          └────────┬─────────┘
-                    ▼
-          ┌──────────────────┐
-          │     Grafana      │
-          └──────────────────┘
+    Client -- HTTP --> API
+    API -- publish event --> Kafka
+    Kafka --> SC
+    Kafka --> AC
+    SC --> PG
+    AC --> AT
+    PG -. cache-aside reads .-> Redis
+    API -. /metrics .-> Prom
+    Prom --> Graf
+
+    classDef api fill:#009688,stroke:#00695C,color:#fff,stroke-width:2px
+    classDef kafka fill:#231F20,stroke:#000,color:#fff,stroke-width:2px
+    classDef consumer fill:#3776AB,stroke:#1B4F72,color:#fff,stroke-width:2px
+    classDef db fill:#4169E1,stroke:#27408B,color:#fff,stroke-width:2px
+    classDef cache fill:#DC382D,stroke:#8B0000,color:#fff,stroke-width:2px
+    classDef obs fill:#E6522C,stroke:#A6320A,color:#fff,stroke-width:2px
+    classDef graf fill:#F46800,stroke:#A64500,color:#fff,stroke-width:2px
+    classDef client fill:#6c757d,stroke:#343a40,color:#fff,stroke-width:2px
+
+    class Client client
+    class API api
+    class Kafka kafka
+    class SC,AC consumer
+    class PG,AT db
+    class Redis cache
+    class Prom obs
+    class Graf graf
 ```
+
+> Rendered automatically by GitHub. If your viewer doesn't support Mermaid, see the plain-text fallback diagram in [`docs/architecture.txt`](#) or open this README on GitHub.
 
 ### Event flow
 
-**For a new shipment:**
+**For a new shipment**
 
-```
-POST /shipments
-      │
-      ▼
-   FastAPI
-      │
-      ▼
-SHIPMENT_CREATED event
-      │
-      ▼
-Kafka: shipment-events
-      ├──────────────→ Shipment Consumer  → shipments + shipment_events
-      └──────────────→ Analytics Consumer → total_shipments
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant A as FastAPI
+    participant K as Kafka
+    participant S as Shipment Consumer
+    participant N as Analytics Consumer
+
+    C->>A: POST /shipments
+    A->>K: publish SHIPMENT_CREATED
+    K-->>S: consume event
+    K-->>N: consume event
+    S->>S: persist shipment + shipment_events
+    N->>N: update total_shipments
 ```
 
-**For a status update:**
+**For a status update**
 
-```
-PATCH /shipments/{shipment_id}/status
-      │
-      ▼
-   FastAPI
-      │
-      ▼
-SHIPMENT_STATUS_UPDATED event
-      │
-      ▼
-Kafka
-      ├──────────────→ Shipment Consumer  → update shipment + invalidate Redis
-      └──────────────→ Analytics Consumer → update status analytics
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant A as FastAPI
+    participant K as Kafka
+    participant S as Shipment Consumer
+    participant N as Analytics Consumer
+    participant R as Redis
+
+    C->>A: PATCH /shipments/{id}/status
+    A->>K: publish SHIPMENT_STATUS_UPDATED
+    K-->>S: consume event
+    K-->>N: consume event
+    S->>S: update shipment in PostgreSQL
+    S->>R: invalidate cache key
+    N->>N: update status analytics
 ```
 
 ---
@@ -490,14 +515,24 @@ The API does not need to synchronously execute every downstream responsibility.
 
 Kafka provides a durable event stream that allows different consumers to react independently:
 
-```
-                    shipment-events
-                          │
-             ┌────────────┴────────────┐
-             ▼                         ▼
-      shipment-consumer         analytics-consumer
-             │                         │
-      shipment state             aggregate metrics
+```mermaid
+flowchart TB
+    T[["📨 shipment-events"]]
+    S["shipment-consumer"]
+    N["analytics-consumer"]
+    SS[("shipment state")]
+    NN[("aggregate metrics")]
+
+    T --> S --> SS
+    T --> N --> NN
+
+    classDef topic fill:#231F20,stroke:#000,color:#fff,stroke-width:2px
+    classDef consumer fill:#3776AB,stroke:#1B4F72,color:#fff,stroke-width:2px
+    classDef store fill:#4169E1,stroke:#27408B,color:#fff,stroke-width:2px
+
+    class T topic
+    class S,N consumer
+    class SS,NN store
 ```
 
 This separation makes it possible to add future consumers without embedding their logic into the API request path.
